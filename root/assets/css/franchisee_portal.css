@@ -1,0 +1,442 @@
+/* =========================================================
+   0) Variables & Base
+========================================================= */
+:root{
+  --header-h: 80px;
+  --nav-w: 220px;
+  --logo-h: 40px;
+  --avatar-d: 42px;
+  --brand-blue: #004990;
+}
+
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body{
+  height: 100%;
+}
+
+body{
+  background: #f8f9fa;
+  color: #333;
+  height: 100vh;
+  overflow: hidden;            /* page scroll happens in .main-content */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* =========================================================
+   1) Header (shared header.php)
+========================================================= */
+.app-header{
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+  height: var(--header-h);
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+}
+
+.header-left{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand{
+  display: flex;
+  align-items: center;
+}
+
+.brand .logo-img{
+  height: var(--logo-h);
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.userbox{
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-direction: row;
+}
+
+.user-meta{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  line-height: 1.1;
+}
+
+.user-name{
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.user-role{
+  font-size: 13px;
+  color: var(--brand-blue);
+}
+
+.avatar-initial{
+  width: var(--avatar-d);
+  height: var(--avatar-d);
+  border-radius: 50%;
+  background: var(--brand-blue);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: .3px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+}
+
+/* =========================================================
+   2) Side (navbar)
+========================================================= */
+
+.nav-list{
+  list-style: none;
+  padding: 10px;
+}
+
+.nav-divider{
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 10px 12px;
+}
+
+.nav-link{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  color: #333;
+  text-decoration: none;
+  border-radius: 8px;
+}
+
+.nav-link .nav-text{
+  font-weight: 700;
+}
+
+.nav-link.active,
+.nav-link:hover{
+  background: #f2f4f7;
+}
+
+.nav-link i{
+  width: 20px;
+  text-align: center;
+  font-size: 16px;
+  color: var(--brand-blue) !important;   /* ensure blue FA icons */
+}
+
+/* =========================================================
+   3) Layout (page frame)
+========================================================= */
+.main-container{
+  display: flex;
+  height: 100vh;
+  padding-top: 0;
+}
+
+.franchisee-navbar{
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  z-index: 900;
+  width: var(--nav-w);
+  height: calc(100vh - var(--header-h));
+  background: #fff;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+}
+
+.main-content{
+ position: fixed;
+  top: var(--header-h);
+  left: var(--nav-w);
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 0 30px 30px;           
+  background: #e9ecef;
+  overflow: auto; 
+  min-width: 0;   
+}
+
+.main-content > *:first-child{
+  margin-top: 0;
+}
+
+/* =========================================================
+   4) Components
+========================================================= */
+.section-title{
+  color: var(--brand-blue);
+  font-size: 22px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ffffff;
+}
+
+.welcome-section{
+  padding-top: 12px;
+}
+
+.welcome-section h1{
+  font-size: 28px;
+  margin: 0 0 10px;
+}
+
+.welcome-section p{
+  opacity: .9;
+  margin-bottom: 20px;
+}
+
+/* =========================================================
+   4.1) Quick Actions
+========================================================= */
+.quick-actions{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.action-card{
+  background: var(--brand-blue);
+  color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  transition: transform .3s ease;
+  cursor: pointer;
+}
+
+.action-card,
+.action-card:link,
+.action-card:visited{
+  text-decoration: none;
+  color: #fff;
+  display: block;
+}
+
+/* links inside the card (titles/subtext) */
+.action-card a,
+.action-card a:link,
+.action-card a:visited{
+  text-decoration: none;
+  color: inherit;
+}
+
+.action-card a:hover,
+.action-card a:focus{
+  text-decoration: none;
+}
+
+.action-card:hover{
+  transform: translateY(-5px);
+}
+
+.action-card i{
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.action-card h3{
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.action-card p{
+  font-size: 13px;
+}
+
+/* =========================================================
+   4.2) Analytics Overview
+========================================================= */
+.analytics-section{
+  margin-bottom: 30px;
+}
+
+.analytics-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.analytics-card{
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.analytics-card h3{
+  font-size: 16px;
+  margin-bottom: 15px;
+  color: var(--brand-blue);
+}
+
+.stat{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.stat-value{
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--brand-blue);
+}
+
+.stat-change{
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.stat-change.negative{
+  background: #ffebee;
+  color: #c62828;
+}
+
+.chart-placeholder{
+  background: #f8f9fa;
+  height: 150px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  margin-top: 15px;
+}
+
+/* =========================================================
+   4.3) Notifications
+========================================================= */
+
+.notifications-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.notification-card{
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.notification-card h3{
+  font-size: 16px;
+  margin-bottom: 15px;
+  color: var(--brand-blue);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.notification-card h3 i{
+  color: #dc3545;
+}
+
+.notification-item{
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.notification-item:last-child{
+  border-bottom: none;
+}
+
+.notification-item p{
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.notification-action{
+  color: var(--brand-blue);
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.notification-action:hover{
+  text-decoration: underline;
+}
+
+/* =========================================================
+   4) Responsive
+========================================================= */
+@media (max-width: 992px){
+  :root{
+    --nav-w: 80px;
+    --logo-h: 36px;
+    --avatar-d: 40px;
+  }
+
+  .franchisee-navbar{
+    width: var(--nav-w);
+  }
+
+  .nav-text{
+    display: none !important;
+  }
+
+  .main-content{
+    left: var(--nav-w);
+    width: calc(100vw - var(--nav-w));
+    padding:  0 15px 20px;
+  }
+}
+
+@media (max-width: 576px){
+  :root{
+    --nav-w: 60px;
+    --logo-h: 32px;
+    --avatar-d: 36px;
+  }
+
+  .franchisee-navbar{
+    width: var(--nav-w);
+    top: var(--header-h);
+    height: calc(100vh - var(--header-h));
+  }
+
+  .nav-text{
+    display: none !important;
+  }
+
+  .main-content{
+    left: var(--nav-w);
+    padding: 0 14px 20px;
+  }
+}
+
