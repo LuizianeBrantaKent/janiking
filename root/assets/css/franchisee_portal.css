@@ -114,6 +114,7 @@ body{
 .nav-list{
   list-style: none;
   padding: 10px;
+  padding-top: 50px;
 }
 
 .nav-divider{
@@ -441,5 +442,6 @@ body{
     padding: 0 14px 20px;
   }
 }
+
 
 
