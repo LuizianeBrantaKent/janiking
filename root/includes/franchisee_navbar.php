@@ -11,15 +11,16 @@
 <aside class="franchisee-navbar">
   <nav>
     <ul class="nav-list">
-      <li><a class="nav-link" href="../franchisee/franchisee_dash.php"><i class="fa-solid fa-th-large"></i><span class="nav-text">Dashboard</span></a></li>
+            <li><a class="nav-link" href="../franchisee/franchisee_dash.php"><i class="fa-solid fa-th-large"></i><span class="nav-text">Dashboard</span></a></li>
       <li><a class="nav-link" href="../franchisee/franchisee_messaging.php"><i class="fa-solid fa-comments"></i><span class="nav-text">Messages</span></a></li>
-      <li><a class="nav-link" href="../franchisee/franchisee_training"><i class="fa-solid fa-graduation-cap"></i><span class="nav-text">Training</span></a></li>
-      <li><a class="nav-link" href="../franchisee/franchisee_documents"><i class="fa-solid fa-folder-open"></i><span class="nav-text">Documents</span></a></li>
+      <li><a class="nav-link" href="../franchisee/franchisee_training_docs"><i class="fa-solid fa-graduation-cap"></i><span class="nav-text">Training & Documents</span></a></li>
       <li><a class="nav-link" href="../franchisee/franchisee_reports"><i class="fa-solid fa-chart-line"></i><span class="nav-text">Reports</span></a></li>
       <li><a class="nav-link" href="../franchisee/franchisee_products"><i class="fa-solid fa-bag-shopping"></i><span class="nav-text">Buy Products</span></a></li>
+      <li><a class="nav-link" href="../franchisee/franchisee_payments"><i class="fa-solid fa-folder-open"></i><span class="nav-text">Payments</span></a></li>
       <li><hr class="nav-divider"></li>
-      <li><a class="nav-link" href="../franchisee/franchisee_"><i class="fa-solid fa-user-gear"></i><span class="nav-text">Profile / Settings</span></a></li>
+      <li><a class="nav-link" href="../franchisee/franchisee_profile"><i class="fa-solid fa-user-gear"></i><span class="nav-text">Profile / Settings</span></a></li>
       <li><a class="nav-link" href="../logout.php"><i class="fa-solid fa-right-from-bracket"></i><span class="nav-text">Logout</span></a></li>
     </ul>
   </nav>
 </aside>
+
