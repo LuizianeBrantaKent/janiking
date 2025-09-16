@@ -57,8 +57,10 @@ body{
 }
 
 .brand .logo-img{
-  height: var(--logo-h);
-  width: auto;
+  .brand .logo-img{
+  height: 200px;     /* fixed height (adjust as needed) */
+  max-height: 200px; /* ensures it won’t stretch */
+  width: auto;      /* keeps proportions */
   display: block;
   object-fit: contain;
 }
@@ -439,4 +441,5 @@ body{
     padding: 0 14px 20px;
   }
 }
+
 
