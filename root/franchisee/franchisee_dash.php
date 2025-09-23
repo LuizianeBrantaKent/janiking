@@ -26,7 +26,142 @@ $stmt = $pdo->prepare("SELECT business_name, email FROM franchisees WHERE franch
 $stmt->execute([':fid' => $currentFranchiseeId]);
 $fr = $stmt->fetch();
 
+// Document Analytics
+$docCount  = 0;
+$lastTitle = null;
+
+try {
+    if ($franchiseeId) {
+        // Count documents for this franchisee
+        $stmt = $pdo->prepare("SELECT COUNT(*) AS c FROM documents WHERE franchisee_id = :fid");
+        $stmt->execute([':fid' => $franchiseeId]);
+        $docCount = (int)($stmt->fetch(PDO::FETCH_ASSOC)['c'] ?? 0);
+
+        // Latest title for this franchisee (by created_at, fallback by id)
+        $stmt = $pdo->prepare("
+            SELECT title 
+            FROM documents 
+            WHERE franchisee_id = :fid 
+            ORDER BY created_at DESC, documents_id DESC 
+            LIMIT 1
+        ");
+        $stmt->execute([':fid' => $franchiseeId]);
+        $lastTitle = $stmt->fetchColumn() ?: null;
+    } else {
+        // Fallback: show global stats if no franchisee in session
+        $docCount = (int)$pdo->query("SELECT COUNT(*) FROM documents")->fetchColumn();
+        $stmt = $pdo->query("SELECT title FROM documents ORDER BY created_at DESC, documents_id DESC LIMIT 1");
+        $lastTitle = $stmt->fetchColumn() ?: null;
+    }
+} catch (Throwable $e) {
+    // Optional: log error; keep UI graceful
+    // error_log($e->getMessage());
+}
+
+// Training Analytics
+
+$trainingCount  = 0;
+$lastTraining   = null;
+
+try {
+    if ($franchiseeId) {
+        // Count trainings for this franchisee
+        $stmt = $pdo->prepare("SELECT COUNT(*) AS c FROM training WHERE franchisee_id = :fid");
+        $stmt->execute([':fid' => $franchiseeId]);
+        $trainingCount = (int)($stmt->fetch(PDO::FETCH_ASSOC)['c'] ?? 0);
+
+        // Latest training title
+        $stmt = $pdo->prepare("
+            SELECT title 
+            FROM training 
+            WHERE franchisee_id = :fid 
+            ORDER BY created_at DESC, training_id DESC 
+            LIMIT 1
+        ");
+        $stmt->execute([':fid' => $franchiseeId]);
+        $lastTraining = $stmt->fetchColumn() ?: null;
+    } else {
+        // Global fallback
+        $trainingCount = (int)$pdo->query("SELECT COUNT(*) FROM training")->fetchColumn();
+        $stmt = $pdo->query("SELECT title FROM training ORDER BY created_at DESC, training_id DESC LIMIT 1");
+        $lastTraining = $stmt->fetchColumn() ?: null;
+    }
+} catch (Throwable $e) {
+    // error_log($e->getMessage());
+}
+
+// Messages Analytics
+
+$unreadCount   = 0;
+$lastMessage   = null;
+
+try {
+    if ($franchiseeId) {
+        // Count unread messages for this franchisee
+        $stmt = $pdo->prepare("
+            SELECT COUNT(*) AS c 
+            FROM messages 
+            WHERE receiver_id = :fid 
+              AND status = 'Unread'
+        ");
+        $stmt->execute([':fid' => $franchiseeId]);
+        $unreadCount = (int)($stmt->fetch(PDO::FETCH_ASSOC)['c'] ?? 0);
+
+        // Get subject of the latest message
+        $stmt = $pdo->prepare("
+            SELECT subject 
+            FROM messages 
+            WHERE receiver_id = :fid 
+            ORDER BY sent_at DESC, message_id DESC 
+            LIMIT 1
+        ");
+        $stmt->execute([':fid' => $franchiseeId]);
+        $lastMessage = $stmt->fetchColumn() ?: null;
+    } else {
+        // Fallback for admin/global
+        $unreadCount = (int)$pdo->query("SELECT COUNT(*) FROM messages WHERE status = 'Unread'")->fetchColumn();
+        $stmt = $pdo->query("SELECT subject FROM messages ORDER BY sent_at DESC, message_id DESC LIMIT 1");
+        $lastMessage = $stmt->fetchColumn() ?: null;
+    }
+} catch (Throwable $e) {
+    // error_log($e->getMessage());
+}
+
+// Products Notification
+
+$newProduct = null;
+
+try {
+    $stmt = $pdo->query("
+        SELECT name 
+        FROM products 
+        ORDER BY product_id DESC 
+        LIMIT 1
+    ");
+    $lastProduct = $stmt->fetchColumn() ?: null;
+} catch (Throwable $e) {
+    // error_log($e->getMessage());
+}
+
+
+// Training Notification
+
+$lastTrainingTitle = null;
+
+try {
+    $stmt = $pdo->query("
+        SELECT title 
+        FROM training 
+        ORDER BY created_at DESC, training_id DESC 
+        LIMIT 1
+    ");
+    $lastTrainingTitle = $stmt->fetchColumn() ?: null;
+} catch (Throwable $e) {
+    // error_log($e->getMessage());
+}
+
 ?>
+
 
 <!doctype html>
 <html lang="en">
@@ -65,25 +200,25 @@ $fr = $stmt->fetch();
         <h3>New Message</h3>
         <p>Compose/Read new messages</p>
       </a>
-      <a class="action-card" href="franchisee_training">
+      <a class="action-card" href="franchisee_training.php">
         <i class="fas fa-graduation-cap"></i>
         <h3>Access Training</h3>
         <p>View courses</p>
       </a>
-      <a class="action-card" href="franchisee_documents">
+      <a class="action-card" href="franchisee_documents.php">
         <i class="fas fa-file-alt"></i>
         <h3>View Documents</h3>
         <p>Access your files</p>
       </a>
-      <a class="action-card" href="franchisee_reports">
-        <i class="fas fa-chart-line"></i>
-        <h3>Generate Report</h3>
-        <p>Create reports</p>
-      </a>
-      <a class="action-card" href="franchisee_products">
+      <a class="action-card" href="franchisee_products.php">
         <i class="fas fa-bag-shopping"></i>
         <h3>Buy Products</h3>
         <p>Browse products</p>
+      </a>
+      <a class="action-card" href="franchisee_profile.php">
+        <i class="fas fa-user-gear"></i>
+        <h3>Edit your Profile</h3>
+        <p>Change Password</p>
       </a>
     </div>
 
@@ -93,36 +228,35 @@ $fr = $stmt->fetch();
 
       <div class="analytics-grid">
         <div class="analytics-card">
-          <h3>Orders</h3>
+          <h3>Documents</h3>
           <div class="stat">
-            <span class="stat-value">24</span>
-            <span class="stat-change">+8%</span>
-          </div>
-          <p>From last month</p>
-          <div class="chart-placeholder">Orders Chart</div>
-          <a href="#" class="notification-action">View Details</a>
+            <span class="stat-value"><?= (int)$docCount ?></span>
+    </div>
+          <p>Recently Added</p>
+          <div class="chart-placeholder">
+      <?= htmlspecialchars($lastTitle ?: 'No documents yet') ?>
+    </div>
+          <a href="franchisee_documents.php" class="notification-action">View Details</a>
         </div>
 
         <div class="analytics-card">
           <h3>Training</h3>
           <div class="stat">
-            <span class="stat-value">3</span>
-            <span class="stat-change">+1</span>
+            <span class="stat-value"><?= (int)$trainingCount ?></span>
           </div>
-          <p>Upcoming sessions</p>
-          <div class="chart-placeholder">Training Progress</div>
-          <a href="#" class="notification-action">View Details</a>
+          <p>Recently Added</p>
+          <div class="chart-placeholder"><?= htmlspecialchars($lastTraining ?: 'No training added yet') ?></div>
+          <a href="franchisee_training.php" class="notification-action">View Details</a>
         </div>
 
         <div class="analytics-card">
           <h3>Messages</h3>
           <div class="stat">
-            <span class="stat-value">5</span>
-            <span class="stat-change">+2</span>
+            <span class="stat-value"><?= (int)$unreadCount ?></span>
           </div>
-          <p>Unread</p>
-          <div class="chart-placeholder">Inbox Activity</div>
-          <a href="#" class="notification-action">Go to Inbox</a>
+          <p>Received</p>
+          <div class="chart-placeholder"><?= htmlspecialchars($lastMessage ?: 'No messages yet') ?></div>
+          <a href="franchisee_messaging.php" class="notification-action">Go to Inbox</a>
         </div>
       </div>
     </section>
@@ -135,26 +269,23 @@ $fr = $stmt->fetch();
         <div class="notification-card">
           <h3><i class="fa-solid fa-bag-shopping"></i> Product Launch</h3>
           <div class="notification-item">
-            <p>New eco-friendly chemical bundle now available.</p>
-            <a href="#" class="notification-action">View Products <i class="fas fa-arrow-right"></i></a>
+            <p><?= $lastProduct ? "New " . htmlspecialchars($lastProduct) . " now available." : "No new products yet." ?></p>
+            <a href="franchisee_products.php" class="notification-action">View Products <i class="fas fa-arrow-right"></i></a>
           </div>
         </div>
 
         <div class="notification-card">
           <h3><i class="fas fa-graduation-cap"></i> Training Reminder</h3>
           <div class="notification-item">
-            <p>“Advanced Cleaning Techniques” starts next week.</p>
-            <a href="#" class="notification-action">View Training <i class="fas fa-arrow-right"></i></a>
+            <p><?php if ($lastTrainingTitle): ?>
+        Have a read on the “<?= htmlspecialchars($lastTrainingTitle) ?>” training.
+      <?php else: ?>
+        No training modules available yet.
+      <?php endif; ?></p>
+            <a href="franchisee_training.php" class="notification-action">View Training <i class="fas fa-arrow-right"></i></a>
           </div>
         </div>
 
-        <div class="notification-card">
-          <h3><i class="fas fa-receipt"></i> Invoice Due</h3>
-          <div class="notification-item">
-            <p>Invoice #INV-2025-031 is due in 3 days.</p>
-            <a href="#" class="notification-action">Pay Now <i class="fas fa-arrow-right"></i></a>
-          </div>
-        </div>
       </div>
     </section>
   </main>
