@@ -1,0 +1,49 @@
+
+/* =========================================================
+   franchisee_products.css  (replace file contents)
+   ========================================================= */
+
+/* Page padding (does NOT touch .main-content globally) */
+#fr-prod-main {
+  padding: 36px 30px 30px;
+}
+
+/* Cards inside the products page */
+#fr-prod-main .product-card img {
+  object-fit: contain;
+  height: 240px;        
+  padding: 8px;          
+  background: #fff;  
+}
+
+/* Cart dropdown items (scoped) */
+#fr-prod-main .cart-item img {
+  width: 64px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: .35rem;
+}
+
+/* Price emphasis within products page only */
+#fr-prod-main .price {
+  font-weight: 700;
+}
+
+/* Cart dropdown sizing */
+#fr-prod-main .dropdown-menu-cart {
+  min-width: 360px;
+  max-height: 440px;
+  overflow-y: auto;
+}
+
+/* Mobile backdrop only for this page context */
+@media (max-width: 991.98px) {
+  #fr-prod-main .jk-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.25);
+    z-index: 1010;
+  }
+  #fr-prod-main .jk-backdrop.show { display: block; }
+}
