@@ -1,0 +1,94 @@
+/* Franchisee Profile — minimal + matches col-lg-* grid */
+:root{
+  /* use your global vars if they exist; these are safe fallbacks */
+  --brand-blue: #004990;
+}
+
+/* keep some breathing room below your shared header, no sidebar math here */
+#main-profile{
+  background: #f8f9fb;
+  padding: 28px 24px 40px;
+}
+
+/* title + brand accents */
+.page-title{
+  color: var(--brand-blue);
+  font-weight: 700;
+  letter-spacing: .2px;
+  margin-bottom: 12px; /* space under the title */
+}
+
+/* brand primary button */
+.btn-brand{
+  background: var(--brand-blue);
+  color:#fff;
+  border:0;
+}
+.btn-brand:hover,
+.btn-brand:focus{
+  color:#fff;
+  filter: brightness(.95);
+}
+
+/* card polish */
+.card{ border:1px solid #e7e9ee; border-radius:14px; }
+.card-header{ border-bottom:1px solid #eef0f4; }
+.card-footer{ border-top:1px solid #eef0f4; }
+.alert{ border-radius:12px; }
+
+/* input-group icon + field join */
+.input-group-text{ background:#fff; border-right:0; }
+.input-group .form-control{ border-left:0; }
+
+/* summary avatar + soft badges (used in your header card) */
+.avatar{
+  width:64px; height:64px; border-radius:50%;
+  display:grid; place-items:center;
+  background: rgba(0,73,144,.10);
+  color: var(--brand-blue);
+  font-size:26px;
+}
+.badge-soft{
+  padding:.45rem .6rem; border-radius:999px; font-weight:600;
+}
+.badge-soft.brand{
+  background: rgba(0,73,144,.10);
+  color: var(--brand-blue);
+  border:1px solid rgba(0,73,144,.15);
+}
+.badge-soft.secondary{
+  background:#f1f2f6; color:#5b6470; border:1px solid #e5e7ec;
+}
+.badge-soft.info{
+  background:#eaf6ff; color:#0b6aa1; border:1px solid #cfeaff;
+}
+
+/* ================== Responsive (match your site) ================== */
+/* --- Tablet fixes (iPad Pro etc.) --- */
+@media (max-width: 1200px){
+  /* Force all col-lg fields in the form to stack full width */
+  #main-profile .row.g-3 > .col-lg-6,
+  #main-profile .row.g-3 > .col-lg-8,
+  #main-profile .row.g-3 > .col-lg-4{
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;               /* override Bootstrap width */
+  }
+
+  /* Inputs shouldn’t shrink; icons keep natural size */
+  #main-profile .input-group{ width: 100%; }
+  #main-profile .input-group-text{ flex: 0 0 auto; }
+
+  /* Footer buttons stop getting cut on the right */
+  #main-profile .card-footer .d-flex{ flex-wrap: wrap; gap: 8px; }
+}
+
+@media (max-width: 992px){
+  /* a bit tighter padding when the sidebar collapses */
+  #main-profile{ padding: 20px 16px 28px; }
+}
+
+@media (max-width: 576px){
+  /* buttons go full-width on small phones (optional) */
+  #main-profile .card-footer .btn{ width: 100%; }
+}
