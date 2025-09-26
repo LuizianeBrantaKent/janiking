@@ -104,16 +104,67 @@ $items.addEventListener('click', (e)=>{
   }
 });
 
-// checkout demo
-document.getElementById('checkoutForm')?.addEventListener('submit', (e)=>{
-  e.preventDefault();
-  // TODO: POST cart + billing to server for real processing
-  localStorage.removeItem('jk_cart');
-  renderCart();
-  const modal = bootstrap.Modal.getInstance(document.getElementById('checkoutModal'));
-  modal.hide();
-  alert('Order placed! (demo)');
-});
+// Paypal Check out
+function getCartTotalAUD() {
+  const t = document.getElementById('total')?.textContent || '0';
+  const num = parseFloat(String(t).replace(/[^\d.]/g, '')) || 0;
+  return num.toFixed(2);
+}
+
+let paypalRendered = false;
+const checkoutModalEl = document.getElementById('checkoutModal');
+
+if (checkoutModalEl) {
+  checkoutModalEl.addEventListener('shown.bs.modal', function () {
+    if (paypalRendered) return;
+    paypalRendered = true;
+
+    paypal.Buttons({
+      style: { layout: 'vertical', color: 'blue', shape: 'rect', label: 'paypal' },
+
+      createOrder: function (data, actions) {
+        const amount = getCartTotalAUD();
+        if (amount <= 0) {
+          const err = document.getElementById('paypal-error');
+          if (err) { err.style.display='block'; err.textContent = 'Your cart is empty.'; }
+          return actions.reject();
+        }
+        return actions.order.create({
+          purchase_units: [{
+            amount: { currency_code: 'AUD', value: amount },
+            description: 'JaniKing Franchisee Order'
+          }]
+        });
+      },
+
+      onApprove: function (data, actions) {
+        return actions.order.capture().then(function (details) {
+          // TODO: optionally POST `details` to your server to record the order
+
+          // Clear cart UI
+          try { localStorage.removeItem('jk_cart'); } catch(e){}
+          document.getElementById('cart-items')?.replaceChildren();
+          const cc = document.getElementById('cart-count'); if (cc) cc.textContent = '0';
+          const s  = id => document.getElementById(id);
+          s('subtotal') && (s('subtotal').textContent = '$0.00');
+          s('tax')      && (s('tax').textContent      = '$0.00');
+          s('total')    && (s('total').textContent    = '$0.00');
+          s('checkoutBtn') && s('checkoutBtn').setAttribute('disabled','disabled');
+
+          alert('Payment completed by ' + (details.payer?.name?.given_name || 'customer') + '.');
+          // bootstrap.Modal.getInstance(checkoutModalEl).hide(); // uncomment to auto-close
+        });
+      },
+
+      onError: function (err) {
+        const box = document.getElementById('paypal-error');
+        if (box) { box.style.display='block'; box.textContent = 'Payment error. Please try again.'; }
+        console.error('PayPal error', err);
+      }
+    }).render('#paypal-buttons');
+  });
+}
 
 // initial
 renderCart();
+
