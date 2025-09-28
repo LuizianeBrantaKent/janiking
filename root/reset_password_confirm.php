@@ -48,9 +48,16 @@ include '../db/config.php';
                         if (empty($errors)) {
                             try {
                                 $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-                                $table = (in_array($email, ['admin@test.com', 'staff@test.com'])) ? 'users' : 'franchisees';
-                                $update_stmt = $conn->prepare("UPDATE $table SET password_hash = ? WHERE email = ?");
-                                $update_stmt->execute([$hashed_password, $email]);
+                               // Check which table the email belongs to
+                                $stmt = $conn->prepare("SELECT user_id FROM users WHERE email = ?");
+                                $stmt->execute([$email]);
+                                if ($stmt->fetch()) {
+                                    $update_stmt = $conn->prepare("UPDATE users SET password_hash = ? WHERE email = ?");
+                                    $update_stmt->execute([$hashed_password, $email]);
+                                } else {
+                                    $update_stmt = $conn->prepare("UPDATE franchisees SET password_hash = ? WHERE email = ?");
+                                    $update_stmt->execute([$hashed_password, $email]);
+                                }
                                 $conn->prepare("DELETE FROM password_resets WHERE token = ?")->execute([$token]);
                                 $success = "Your password has been reset successfully.<br><a href='/login.php' class='btn btn-primary mt-3' style='display:inline-block; color:#fff;'>Login Now</a>";
 
